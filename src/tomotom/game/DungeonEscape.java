@@ -11,46 +11,42 @@ import java.util.Set;
 
 public class DungeonEscape {
 
-    public static void main(String[] args) throws IOException, InvalidDataException {
+    public static void main(String[] args) {
         DungeonCrawling dungeonCrawling = new DungeonCrawlingImpl();
-        Dungeon dungeon = dungeonCrawling.constructDungeon("file.txt");
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please choose one of the actions: DISPLAY, MOVE, AVAILABLE_EXITS, EXIT");
-        while (!scanner.hasNext("EXIT")) {
+        System.out.println("Please choose one of the actions: DISPLAY, MOVE, AVAILABLE_EXITS, TERMINATE");
+        while (!scanner.hasNext("TERMINATE")) {
             String enteredCommand = scanner.next();
-            switch (Command.valueOf(enteredCommand)) {
-                case DISPLAY:
-                    dungeonCrawling.displayDungeon(dungeon);
-                    break;
-                case MOVE:
-                    System.out.println("Please enter the room name");
-                    String roomName = scanner.next();
-                    System.out.println("Please enter the direction to move");
-                    String direction = scanner.next();
-                    try {
-                        Room enteredRoom = dungeonCrawling.move(new Room(roomName), DoorDirection.valueOf(direction));
-                        System.out.println("You entered the room: " + enteredRoom.getName());
-                    } catch (IllegalArgumentException ex) {
-                        System.out.println("Please provide a valid direction name");
-                    } catch (NoRoomExistsException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                    break;
-                case AVAILABLE_EXITS:
-                    System.out.println("Please enter the room name");
-                    String rName = scanner.next();
-                    try {
-                        Set<DoorDirection> directions = dungeonCrawling.displayAvailableMoves(new Room(rName));
-                        System.out.printf("Available directions from %s are: %s%n", rName, directions.toString());
-                    } catch (NoRoomExistsException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                    break;
-                case SHORTEST_PATH:
-                    //TODO: Implement this case.
+            try {
+                switch (Command.valueOf(enteredCommand)) {
+                    case DISPLAY:
+                        dungeonCrawling.displayDungeon();
+                        break;
+                    case MOVE:
+                        System.out.println("Please enter the direction to move");
+                        String direction = scanner.next();
+                        try {
+                            Room enteredRoom = dungeonCrawling.move(DoorDirection.valueOf(direction));
+                            System.out.println("You entered the room: " + enteredRoom.getName());
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println("Please provide a valid direction name");
+                        }
+                        break;
+                    case AVAILABLE_EXITS:
+                        Set<DoorDirection> directions = dungeonCrawling.displayAvailableMoves();
+                        System.out.printf("Available directions from the current room '%s' are: %s%n",
+                                dungeonCrawling.getCurrentRoomName(),
+                                directions.toString());
+                        break;
+                    case SHORTEST_PATH:
+                        //TODO: Implement this case.
+                        break;
+                }
+            } catch (Exception ex) {
+                System.out.println("Please provide ą valid action");
             }
-            System.out.println("Please choose one of the actions: DISPLAY, MOVE, AVAILABLE_EXITS");
+            System.out.println("Please choose one of the actions: DISPLAY, MOVE, AVAILABLE_EXITS, TERMINATE");
         }
     }
 }

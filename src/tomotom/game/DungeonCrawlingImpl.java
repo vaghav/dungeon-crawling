@@ -15,50 +15,25 @@ import static java.util.stream.Collectors.toMap;
 
 public class DungeonCrawlingImpl implements DungeonCrawling {
 
-    private final Pattern pattern = Pattern.compile("^([a-b0-9]{2})(( [n|s|e|w]:[a-b0-9]{2})+)$");
-    private final Dungeon dungeon = new Dungeon(new HashMap<>());
+    private final Dungeon dungeon = new Dungeon();
+    private Room currentRoom = new Room("a0");
 
     @Override
-    public Dungeon constructDungeon(String fileName) throws IOException, InvalidDataException {
-        Map<Room, Map<DoorDirection, Room>> roomMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
-                if (!matcher.matches()) {
-                    throw new InvalidDataException("Invalid input data is provided!");
-                }
-                //TODO: Use group names instead of group indexes.
-                String room = matcher.group(1).trim();
-                String[] neighbours = matcher.group(2).trim().split(" ");
-                Map<DoorDirection, Room> directionRoomMap = Arrays.stream(neighbours)
-                        .collect(toMap(item -> DoorDirection.fromString(item.split(":")[0]),
-                                item -> new Room(item.split(":")[1])));
-                roomMap.put(new Room(room), directionRoomMap);
-            }
-        }
-        dungeon.setRoomMap(roomMap);
-        return dungeon;
-    }
-
-    @Override
-    public Room move(Room room, DoorDirection doorDirection) throws IllegalArgumentException, NoRoomExistsException {
-        if (dungeon.getRoomMap().get(room) == null) {
-            throw new NoRoomExistsException("Please enter a valid room name");
-        }
-        Map<DoorDirection, Room> doorDirectionRoomMap = dungeon.getRoomMap().get(room);
+    public Room move(DoorDirection doorDirection) throws IllegalArgumentException {
+        Map<DoorDirection, Room> doorDirectionRoomMap = dungeon.getRoomMap().get(currentRoom);
         Room enteredRoom = doorDirectionRoomMap.get(doorDirection);
         if (enteredRoom == null) {
             throw new IllegalArgumentException("There is no exit with the provided direction!");
         }
+        currentRoom = enteredRoom;
         return enteredRoom;
     }
 
     @Override
-    public void displayDungeon(Dungeon dungeon) {
+    public void displayDungeon() {
         int roomCount = dungeon.getRoomMap().keySet().size();
         String[][] dungeonMap = new String[4 * roomCount - 2][4 * roomCount - 2];
-
+        
         for (String[] value : dungeonMap) {
             Arrays.fill(value, "  ");
         }
@@ -70,7 +45,7 @@ public class DungeonCrawlingImpl implements DungeonCrawling {
 
         Room startingRoom = new Room("a0");
         drawnRooms.add(startingRoom);
-        drawDungeon(startY, startY, startingRoom, dungeon, drawnRooms, dungeonMap);
+        drawDungeon(startX, startY, startingRoom, dungeon, drawnRooms, dungeonMap);
 
         for (String[] strings : dungeonMap) {
             for (String string : strings) {
@@ -112,15 +87,17 @@ public class DungeonCrawlingImpl implements DungeonCrawling {
 
 
     @Override
-    public Set<DoorDirection> displayAvailableMoves(Room room) throws NoRoomExistsException {
-        if (dungeon.getRoomMap().get(room) == null) {
-            throw new NoRoomExistsException("Please enter a valid room name");
-        }
-        return dungeon.getRoomMap().get(room).keySet();
+    public Set<DoorDirection> displayAvailableMoves() {
+        return dungeon.getRoomMap().get(currentRoom).keySet();
     }
 
     @Override
     public void findShortestPath(Room sourceRoom, Room destinationRoom) {
         // TODO: Implement Dijkstra's algorithm.
+    }
+
+    @Override
+    public String getCurrentRoomName() {
+        return currentRoom.getName();
     }
 }

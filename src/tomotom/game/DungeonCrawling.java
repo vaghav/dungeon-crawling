@@ -10,37 +10,25 @@ import java.util.Set;
 public interface DungeonCrawling {
 
     /**
-     * Construct dungeon by given input data.
+     * Navigate from the current room with given direction.
      *
-     * @param fileName the given file name.
-     * @return the constructed dungeon.
-     */
-    Dungeon constructDungeon(String fileName) throws IOException, InvalidDataException;
-
-    /**
-     * Navigate across rooms by given direction.
-     *
-     * @param room          the room from move to.
      * @param doorDirection the direction of the movement.
      * @return the room entered by direction.
      * @throws IllegalArgumentException if no exit from the room in @param doorDirection.
      */
-    Room move(Room room, DoorDirection doorDirection) throws IllegalArgumentException, NoRoomExistsException;
+    Room move(DoorDirection doorDirection) throws IllegalArgumentException;
 
     /**
-     * Draw dungeon in graphical way.
-     *
-     * @param dungeon the dungeon to display.
+     * Draw dungeon.
      */
-    void displayDungeon(Dungeon dungeon);
+    void displayDungeon();
 
     /**
-     * Display available moves from current room.
+     * Display available moves from the current room.
      *
-     * @param room the current room to move from.
      * @return available moves.
      */
-    Set<DoorDirection> displayAvailableMoves(Room room) throws NoRoomExistsException;
+    Set<DoorDirection> displayAvailableMoves();
 
     /**
      * Find shortest path between rooms.
@@ -49,4 +37,10 @@ public interface DungeonCrawling {
      * @param destinationRoom the destination room.
      */
     void findShortestPath(Room sourceRoom, Room destinationRoom);
+
+    /**
+     *
+     * @return the current room name.
+     */
+    String getCurrentRoomName();
 }
