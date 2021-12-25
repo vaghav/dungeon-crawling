@@ -10,36 +10,43 @@ import java.util.Set;
 public interface DungeonCrawling {
 
     /**
-     *  Construct dungeon by given input data.
+     * Construct dungeon by given input data.
+     *
      * @param fileName the given file name.
      * @return the constructed dungeon.
      */
-    public Dungeon constructDungeon(String fileName) throws IOException, InvalidDataException;
+    Dungeon constructDungeon(String fileName) throws IOException, InvalidDataException;
 
     /**
      * Navigate across rooms by given direction.
-     * @param doorDirection represents direction of movement.
-     * @throws IllegalStateException if no exit from the room in @param doorDirection.
+     *
+     * @param room          the room from move to.
+     * @param doorDirection the direction of the movement.
+     * @return the room entered by direction.
+     * @throws IllegalArgumentException if no exit from the room in @param doorDirection.
      */
-    public void move(DoorDirection doorDirection) throws IllegalStateException;
+    Room move(Room room, DoorDirection doorDirection) throws IllegalArgumentException, NoRoomExistsException;
 
     /**
      * Draw dungeon in graphical way.
+     *
      * @param dungeon the dungeon to display.
      */
-    public void displayDungeon(Dungeon dungeon);
+    void displayDungeon(Dungeon dungeon);
 
     /**
      * Display available moves from current room.
+     *
      * @param room the current room to move from.
      * @return available moves.
      */
-    public Set<DoorDirection> displayAvailableMoves(Room room);
+    Set<DoorDirection> displayAvailableMoves(Room room) throws NoRoomExistsException;
 
     /**
      * Find shortest path between rooms.
-     * @param sourceRoom the room to start.
+     *
+     * @param sourceRoom      the room to start.
      * @param destinationRoom the destination room.
      */
-    public void findShortestPath(Room sourceRoom, Room destinationRoom);
+    void findShortestPath(Room sourceRoom, Room destinationRoom);
 }

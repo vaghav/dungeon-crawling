@@ -42,8 +42,16 @@ public class DungeonCrawlingImpl implements DungeonCrawling {
     }
 
     @Override
-    public void move(DoorDirection doorDirection) throws IllegalStateException {
-
+    public Room move(Room room, DoorDirection doorDirection) throws IllegalArgumentException, NoRoomExistsException {
+        if (dungeon.getRoomMap().get(room) == null) {
+            throw new NoRoomExistsException("Please enter a valid room name");
+        }
+        Map<DoorDirection, Room> doorDirectionRoomMap = dungeon.getRoomMap().get(room);
+        Room enteredRoom = doorDirectionRoomMap.get(doorDirection);
+        if (enteredRoom == null) {
+            throw new IllegalArgumentException("There is no exit with the provided direction!");
+        }
+        return enteredRoom;
     }
 
     @Override
@@ -104,9 +112,9 @@ public class DungeonCrawlingImpl implements DungeonCrawling {
 
 
     @Override
-    public Set<DoorDirection> displayAvailableMoves(Room room) {
+    public Set<DoorDirection> displayAvailableMoves(Room room) throws NoRoomExistsException {
         if (dungeon.getRoomMap().get(room) == null) {
-            throw new IllegalArgumentException("Invalid room was provided");
+            throw new NoRoomExistsException("Please enter a valid room name");
         }
         return dungeon.getRoomMap().get(room).keySet();
     }

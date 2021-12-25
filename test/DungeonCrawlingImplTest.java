@@ -1,7 +1,7 @@
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import tomotom.game.DungeonCrawling;
 import tomotom.game.DungeonCrawlingImpl;
+import tomotom.game.NoRoomExistsException;
 import tomotom.game.dto.DoorDirection;
 import tomotom.game.dto.Dungeon;
 import tomotom.game.dto.Room;
@@ -31,13 +31,30 @@ class DungeonCrawlingImplTest {
         assertThat(dungeon.getRoomMap().get(new Room("a1"))).isEqualTo(exit);
     }
 
-    @Ignore
+
     @Test
-    void move_by_direction() {
-        //TODO: Implement unit test.
+    void move_by_direction() throws Exception {
+        DungeonCrawling dungeonCrawling = new DungeonCrawlingImpl();
+        dungeonCrawling.constructDungeon("file.txt");
+
+        Room actualRoom = dungeonCrawling.move(new Room("a0"), DoorDirection.NORTH);
+
+        assertThat(actualRoom).isEqualTo(new Room("a3"));
     }
 
-    @Ignore
+
+    @Test
+    void move_by_direction_throws_exception_invalid_direction() throws Exception {
+        DungeonCrawling dungeonCrawling = new DungeonCrawlingImpl();
+        dungeonCrawling.constructDungeon("file.txt");
+
+        assertThatThrownBy(() ->
+                dungeonCrawling.move(new Room("a0"), DoorDirection.SOUTH))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("There is no exit with the provided direction!");
+    }
+
+
     @Test
     void display_dungeon() {
         DungeonCrawling dungeonCrawling = new DungeonCrawlingImpl();
@@ -89,11 +106,11 @@ class DungeonCrawlingImplTest {
 
         assertThatThrownBy(() ->
                 dungeonCrawling.displayAvailableMoves(new Room("b7")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Invalid room was provided");
+                .isInstanceOf(NoRoomExistsException.class)
+                .hasMessageContaining("Please enter a valid room name");
     }
 
-    @Ignore
+
     @Test
     void findShortestPath() {
         //TODO: Implement unit test.
